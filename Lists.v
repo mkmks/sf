@@ -386,7 +386,7 @@ Fixpoint member (v:nat) (s:bag) : bool :=
 Example test_member1:             member 1 [1;4;1] = true.
 Proof. reflexivity. Qed.
 Example test_member2:             member 2 [1;4;1] = false.
-
+Proof. reflexivity. Qed.
 
 (** [] *)
 
@@ -938,16 +938,20 @@ Definition option_elim (d : nat) (o : natoption) : nat :=
    have to pass a default element for the [nil] case.  *)
 
 Definition hd_opt (l : natlist) : natoption :=
-  (* FILL IN HERE *) admit.
+  match l with
+    | [] => None
+    | x :: xs => Some x
+  end.
 
 Example test_hd_opt1 : hd_opt [] = None.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_hd_opt2 : hd_opt [1] = Some 1.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Example test_hd_opt3 : hd_opt [5;6] = Some 5.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
+
 (** [] *)
 
 (** **** Exercise: 1 star, optional (option_elim_hd) *)
@@ -956,7 +960,10 @@ Example test_hd_opt3 : hd_opt [5;6] = Some 5.
 Theorem option_elim_hd : forall (l:natlist) (default:nat),
   hd default l = option_elim default (hd_opt l).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l default. induction l.
+  reflexivity. 
+  reflexivity. 
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars (beq_natlist) *)
@@ -965,19 +972,29 @@ Proof.
     yields [true] for every list [l]. *)
 
 Fixpoint beq_natlist (l1 l2 : natlist) : bool :=
-  (* FILL IN HERE *) admit.
+  match l1, l2 with
+      | [], [] => true
+      | x :: xs, [] => false
+      | [], y :: ys => false
+      | x :: xs, y :: ys => if beq_nat x y then beq_natlist xs ys else false
+  end.
 
 Example test_beq_natlist1 :   (beq_natlist nil nil = true).
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_beq_natlist2 :   beq_natlist [1;2;3] [1;2;3] = true.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 Example test_beq_natlist3 :   beq_natlist [1;2;3] [1;2;4] = false.
- (* FILL IN HERE *) Admitted.
+Proof. reflexivity. Qed.
 
 Theorem beq_natlist_refl : forall l:natlist,
   true = beq_natlist l l.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros l. induction l.
+  reflexivity. 
+  simpl. rewrite <- IHl. induction n.
+  reflexivity. 
+  simpl. rewrite <- IHn. reflexivity. 
+Qed.
 (** [] *)
 
 (* ###################################################### *)
