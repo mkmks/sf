@@ -3,7 +3,7 @@
 (* This library definition is included here temporarily 
    for backward compatibility with Coq 8.3.  
    Please ignore. *)
-Definition admit {T: Type} : T.  Admitted.
+(* Definition admit {T: Type} : T.  Admitted. *)
 
 (* ###################################################################### *)
 (** * Introduction *)
@@ -871,14 +871,8 @@ Proof.
 (** Prove the following theorem.  (You may want to first prove a
     subsidiary lemma or two.) *)
 
-Lemma andb_true_id :
-  forall (a : bool), (andb true a = a).
-Proof.
-  intros a. destruct a.
-  reflexivity. reflexivity. Qed.
-
-Lemma orb_true_true :
-  forall (a : bool), (orb true a = true).
+Lemma andb_orb_dual :
+  forall (a : bool), (andb true a = orb false a).
 Proof.
   intros a. destruct a.
   reflexivity. reflexivity. Qed.
@@ -890,10 +884,11 @@ Theorem andb_eq_orb :
 Proof.
   intros a b.
   destruct a.
-  rewrite -> andb_true_id. rewrite -> orb_true_true.
+  rewrite -> andb_orb_dual. simpl.
   intros H. rewrite -> H. reflexivity.
-
-  
+  rewrite <- andb_orb_dual. simpl.
+  intros H. rewrite <- H. reflexivity.
+  Qed.
 
 (** **** Exercise: 3 stars (binary) *)
 (** Consider a different, more efficient representation of natural
