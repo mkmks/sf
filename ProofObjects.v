@@ -183,10 +183,12 @@ Print eight_is_beautiful'''.
 Theorem six_is_beautiful :
   beautiful 6.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply b_sum with (n:=3) (m:=3).
+  apply b_3. apply b_3.
+Qed.
 
 Definition six_is_beautiful' : beautiful 6 :=
-  (* FILL IN HERE *) admit.
+  b_sum 3 3 b_3 b_3.
 (** [] *)
 
 (** **** Exercise: 1 star (nine_is_beautiful) *)
@@ -195,10 +197,12 @@ Definition six_is_beautiful' : beautiful 6 :=
 Theorem nine_is_beautiful :
   beautiful 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  apply b_sum with (n:=3) (m:=6).
+  apply b_3. apply six_is_beautiful.
+Qed.
 
 Definition nine_is_beautiful' : beautiful 9 :=
-  (* FILL IN HERE *) admit.
+  b_sum 3 6 b_3 six_is_beautiful'.
 (** [] *)
 
 
@@ -290,13 +294,15 @@ Definition beatiful_plus3'' : Prop :=
 
 Theorem b_times2: forall n, beautiful n -> beautiful (2*n).
 Proof.
-    (* FILL IN HERE *) Admitted.
+  intros n H. induction n. apply b_0.
+  simpl. 
+Admitted.
 (** [] *)
 
 (** Now write a corresponding proof object directly. *)
 
-Definition b_times2': forall n, beautiful n -> beautiful (2*n) :=
-  (* FILL IN HERE *) admit.
+(* Definition b_times2': forall n, beautiful n -> beautiful (2*n) := *)
+(*   (* FILL IN HERE *) admit. *)
 (** [] *)
 
 
@@ -305,8 +311,8 @@ Definition b_times2': forall n, beautiful n -> beautiful (2*n) :=
 (** **** Exercise: 2 stars, optional (gorgeous_plus13_po) *) 
 (** Give a proof object corresponding to the theorem [gorgeous_plus13] from Prop.v *)
 
-Definition gorgeous_plus13_po: forall n, gorgeous n -> gorgeous (13+n):=
-   (* FILL IN HERE *) admit.
+(* Definition gorgeous_plus13_po: forall n, gorgeous n -> gorgeous (13+n):= *)
+(*    (* FILL IN HERE *) admit. *)
 (** [] *)
 
 
@@ -382,8 +388,8 @@ we get: *)
 (** **** Exercise: 2 stars, optional (conj_fact) *)
 (** Construct a proof object demonstrating the following proposition. *)
 
-Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
-  (* FILL IN HERE *) admit.
+(* Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R := *)
+(*   (* FILL IN HERE *) admit. *)
 (** [] *)
 
 
@@ -396,10 +402,10 @@ Definition conj_fact : forall P Q R, P /\ Q -> Q /\ R -> P /\ R :=
     using tactics. (_Hint_: if you make use of previously defined
     theorems, you should only need a single line!) *)
 
-Definition beautiful_iff_gorgeous :
-  forall n, beautiful n <-> gorgeous n :=
-  (* FILL IN HERE *) admit.
-(** [] *)
+(* Definition beautiful_iff_gorgeous : *)
+(*   forall n, beautiful n <-> gorgeous n := *)
+(*   (* FILL IN HERE *) admit. *)
+(* (** [] *) *)
 
 
 (** **** Exercise: 2 stars, optional (or_commut'') *)
@@ -429,8 +435,8 @@ Definition snie : some_nat_is_even :=
 (** **** Exercise: 2 stars (ex_beautiful_Sn) *)
 (** Complete the definition of the following proof object: *)
 
-Definition p : ex nat (fun n => beautiful (S n)) :=
-(* FILL IN HERE *) admit.
+(* Definition p : ex nat (fun n => beautiful (S n)) := *)
+(* (* FILL IN HERE *) admit. *)
 (** [] *)
 
 
