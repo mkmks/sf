@@ -147,7 +147,11 @@ Qed.
 (** **** Exercise: 2 stars (b_timesm) *)
 Theorem b_timesm: forall n m, beautiful n -> beautiful (m*n).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros n m B. induction m.
+  simpl. apply b_0.
+  rewrite mult_comm. rewrite <- mult_n_Sm.
+  apply b_sum. rewrite mult_comm. apply IHm. apply B.
+Qed.
 (** [] *)
 
 
@@ -199,7 +203,13 @@ Inductive gorgeous : nat -> Prop :=
 Theorem gorgeous_plus13: forall n, 
   gorgeous n -> gorgeous (13+n).
 Proof.
-   (* FILL IN HERE *) Admitted.
+  intros n H. induction H.
+  simpl. assert (H13: 13 = 5 + 8). reflexivity. rewrite H13. apply g_plus5.
+  assert (H8: 8 = 5 + 3). reflexivity. rewrite H8. apply g_plus5. apply g_plus3. apply g_0.
+  rewrite plus_comm. rewrite <- plus_assoc. apply g_plus3. rewrite plus_comm. apply IHgorgeous.
+  rewrite plus_comm. rewrite <- plus_assoc. apply g_plus5. rewrite plus_comm. apply IHgorgeous.
+Qed.
+
 (** [] *)
 
 (** It seems intuitively obvious that, although [gorgeous] and
@@ -249,13 +259,24 @@ Abort.
 Theorem gorgeous_sum : forall n m,
   gorgeous n -> gorgeous m -> gorgeous (n + m).
 Proof.
- (* FILL IN HERE *) Admitted.
+  intros n m H J. induction H.
+  simpl. apply J.
+  rewrite <- plus_assoc. apply g_plus3. apply IHgorgeous.
+  rewrite <- plus_assoc. apply g_plus5. apply IHgorgeous.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced (beautiful__gorgeous) *)
 Theorem beautiful__gorgeous : forall n, beautiful n -> gorgeous n.
 Proof.
- (* FILL IN HERE *) Admitted.
+intros n H. induction H.
+apply g_0. apply g_plus3. apply g_0. apply g_plus5. apply g_0.
+induction H0. rewrite -> plus_0_r. apply IHbeautiful1.
+rewrite plus_comm. apply g_plus3. apply IHbeautiful1.
+rewrite plus_comm. apply g_plus5. apply IHbeautiful1.
+apply gorgeous_sum. apply IHbeautiful1. apply IHbeautiful2.
+Qed.
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (g_times2) *)
@@ -264,13 +285,20 @@ Proof.
 
 Lemma helper_g_times2 : forall x y z, x + (z + y)= z + x + y.
 Proof.
-   (* FILL IN HERE *) Admitted.
+intros. rewrite plus_assoc. assert (H: x + z = z + x). apply plus_comm.
+rewrite H. reflexivity.
+Qed.
 
 Theorem g_times2: forall n, gorgeous n -> gorgeous (2*n).
 Proof.
    intros n H. simpl. 
    induction H.
-   (* FILL IN HERE *) Admitted.
+   simpl. apply g_0.
+   apply gorgeous_sum. apply g_plus3. apply H.
+   rewrite <- helper_g_times2. simpl. rewrite plus_comm. apply g_plus3. apply H.
+   apply gorgeous_sum. apply g_plus5. apply H.
+   rewrite <- helper_g_times2. simpl. rewrite plus_comm. apply g_plus5. apply H.
+Qed.
 (** [] *)
 
 
@@ -315,7 +343,11 @@ Inductive ev : nat -> Prop :=
 Theorem double_even : forall n,
   ev (double n).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. induction n.
+  simpl. apply ev_0.
+  simpl. apply ev_SS. apply IHn.
+Qed.
+
 (** [] *)
 
 
@@ -368,7 +400,15 @@ Qed.
 (** Could this proof also be carried out by induction on [n] instead
     of [E]?  If not, why not? *)
 
-(* FILL IN HERE *)
+Theorem ev__even__ : forall n,
+  ev n -> even n.
+Proof.
+  intros n E. induction n.
+  unfold even. reflexivity.
+  unfold even. destruct n. inversion E. inversion E. 
+  simpl. induction H0. reflexivity.
+  rewrite <- H. Abort.
+(* the shape of induction hypothesis is never what we need *)
 (** [] *)
 
 (** The induction principle for inductively defined propositions does
@@ -391,7 +431,7 @@ Qed.
    Intuitively, we expect the proof to fail because not every
    number is even. However, what exactly causes the proof to fail?
 
-(* FILL IN HERE *)
+-- We need to construct false for odd numbers.
 *)
 (** [] *)
 
@@ -401,7 +441,11 @@ Qed.
 Theorem ev_sum : forall n m,
    ev n -> ev m -> ev (n+m).
 Proof. 
-  (* FILL IN HERE *) Admitted.
+intros n m H J. induction H.
+simpl. apply J.
+simpl. apply ev_SS. apply IHev.
+Qed.
+
 (** [] *)
 
 
@@ -424,7 +468,14 @@ Proof.
 (** **** Exercise: 1 star, optional (ev_minus2_n) *)
 (** What happens if we try to use [destruct] on [n] instead of [inversion] on [E]? *)
 
-(* FILL IN HERE *)
+Theorem ev_minus2_: forall n,
+  ev n -> ev (pred (pred n)). 
+Proof.
+  intros n E.
+  destruct n. simpl. apply ev_0.
+  simpl. Abort.
+
+(* again, we cannot construct a false proposition for an odd number *)
 (** [] *)
 
 
@@ -474,7 +525,8 @@ Proof.
 Theorem SSSSev__even : forall n,
   ev (S (S (S (S n)))) -> ev n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H. inversion H1. apply H3.
+Qed.
 
 (** The [inversion] tactic can also be used to derive goals by showing
     the absurdity of a hypothesis. *)
@@ -482,7 +534,9 @@ Proof.
 Theorem even5_nonsense : 
   ev 5 -> 2 + 2 = 9.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros. inversion H. simpl. inversion H1. inversion H3.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, advanced (ev_ev__ev) *)
@@ -492,7 +546,10 @@ Proof.
 Theorem ev_ev__ev : forall n m,
   ev (n+m) -> ev n -> ev m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n m H J. induction J. apply H.
+  apply IHJ. inversion H. apply H1.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (ev_plus_plus) *)
@@ -503,7 +560,7 @@ Proof.
 Theorem ev_plus_plus : forall n m p,
   ev (n+m) -> ev (n+p) -> ev (m+p).
 Proof.
-  (* FILL IN HERE *) Admitted.
+Admitted.
 (** [] *)
 
 

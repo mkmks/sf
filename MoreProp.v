@@ -89,14 +89,17 @@ Inductive next_even (n:nat) : nat -> Prop :=
 (** Define an inductive binary relation [total_relation] that holds
     between every pair of natural numbers. *)
 
-(* FILL IN HERE *)
+Inductive total_relation : nat -> nat -> Prop :=
+  every : forall n m:nat, total_relation n m.
+
 (** [] *)
 
 (** **** Exercise: 2 stars (empty_relation) *)
 (** Define an inductive binary relation [empty_relation] (on numbers)
     that never holds. *)
 
-(* FILL IN HERE *)
+Inductive empty_relation : nat -> nat -> Prop :=. 
+
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (le_exercises) *)
@@ -106,24 +109,26 @@ Inductive next_even (n:nat) : nat -> Prop :=
 
 Lemma le_trans : forall m n o, m <= n -> n <= o -> m <= o.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros m n o H J. induction J. apply H. apply le_S. apply IHJ.
+Qed.
 
 Theorem O_le_n : forall n,
   0 <= n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n. apply le_n. apply le_S. apply IHn.
+Qed.
 
 Theorem n_le_m__Sn_le_Sm : forall n m,
   n <= m -> S n <= S m.
 Proof. 
-  (* FILL IN HERE *) Admitted.
-
+  intros n m H. induction H. apply le_n. apply le_S. apply IHle.
+Qed.
 
 Theorem Sn_le_Sm__n_le_m : forall n m,
   S n <= S m -> n <= m.
 Proof. 
-  (* FILL IN HERE *) Admitted.
-
+Admitted.
+  
 
 Theorem le_plus_l : forall a b,
   a <= a + b.
@@ -336,7 +341,7 @@ Definition natural_number_induction_valid : Prop :=
     equivalent to [Peven n] otherwise. *)
 
 Definition combine_odd_even (Podd Peven : nat -> Prop) : nat -> Prop :=
-  (* FILL IN HERE *) admit.
+  fun n => if (evenb n) then Peven n else Podd n.
 
 (** To test your definition, see whether you can prove the following
     facts: *)
@@ -347,7 +352,12 @@ Theorem combine_odd_even_intro :
     (oddb n = false -> Peven n) ->
     combine_odd_even Podd Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros Podd Peven n H J. 
+  unfold oddb in H, J. induction n.
+  unfold combine_odd_even. apply J. reflexivity. 
+  unfold combine_odd_even. destruct evenb.
+  apply J. reflexivity. apply H. reflexivity. 
+Qed.
 
 Theorem combine_odd_even_elim_odd :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -355,7 +365,9 @@ Theorem combine_odd_even_elim_odd :
     oddb n = true ->
     Podd n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros Podd Peven n H J. unfold combine_odd_even in H.
+  unfold oddb in J. destruct evenb. inversion J. apply H.
+Qed.
 
 Theorem combine_odd_even_elim_even :
   forall (Podd Peven : nat -> Prop) (n : nat),
@@ -363,7 +375,9 @@ Theorem combine_odd_even_elim_even :
     oddb n = false ->
     Peven n.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros Podd Peven n H J. unfold combine_odd_even in H. unfold oddb in J.
+  destruct evenb. apply H. inversion J.
+Qed.
 
 (** [] *)
 
@@ -380,15 +394,15 @@ Proof.
     [true_upto_n__true_everywhere] that makes
     [true_upto_n_example] work. *)
 
-(* 
-Fixpoint true_upto_n__true_everywhere
-(* FILL IN HERE *)
 
-Example true_upto_n_example :
-    (true_upto_n__true_everywhere 3 (fun n => even n))
-  = (even 3 -> even 2 -> even 1 -> forall m : nat, even m).
-Proof. reflexivity.  Qed.
-*)
+(* Fixpoint true_upto_n__true_everywhere *)
+(* (* FILL IN HERE *) *)
+
+(* Example true_upto_n_example : *)
+(*     (true_upto_n__true_everywhere 3 (fun n => even n)) *)
+(*   = (even 3 -> even 2 -> even 1 -> forall m : nat, even m). *)
+(* Proof. reflexivity.  Qed. *)
+
 (** [] *)
 
 (* $Date: 2013-07-17 16:19:11 -0400 (Wed, 17 Jul 2013) $ *)
