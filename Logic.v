@@ -97,7 +97,11 @@ Proof.
 Theorem proj2 : forall P Q : Prop, 
   P /\ Q -> Q.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q H.
+  inversion H as [HP HQ].
+  apply HQ.
+Qed.
+
 (** [] *)
 
 Theorem and_commut : forall P Q : Prop, 
@@ -121,7 +125,11 @@ Theorem and_assoc : forall P Q R : Prop,
 Proof.
   intros P Q R H.
   inversion H as [HP [HQ HR]].
-(* FILL IN HERE *) Admitted.
+  split.
+  split.
+  apply HP. apply HQ. apply HR.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 2 stars (even__ev) *)
@@ -137,8 +145,13 @@ Proof.
 Theorem even__ev : forall n : nat,
   (even n -> ev n) /\ (even (S n) -> ev (S n)).
 Proof.
-  (* Hint: Use induction on [n]. *)
-  (* FILL IN HERE *) Admitted.
+  intros n. induction n.
+  split. intros H. apply ev_0.
+  intros contra. inversion contra.
+  split. inversion IHn. apply H0.
+  intros H. apply ev_SS. apply IHn. apply H.
+Qed.
+
 (** [] *)
 
 
@@ -178,12 +191,16 @@ Proof.
 Theorem iff_refl : forall P : Prop, 
   P <-> P.
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros P. split. intros H. apply H. intros H. apply H.
+Qed.
 
 Theorem iff_trans : forall P Q R : Prop, 
   (P <-> Q) -> (Q <-> R) -> (P <-> R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q R H J. inversion H. inversion J. split.
+  intros K. apply H0 in K. apply H2 in K. apply K.
+  intros K. apply H3 in K. apply H1 in K. apply K.
+Qed.
 
 (** Hint: If you have an iff hypothesis in the context, you can use
     [inversion] to break it into two separate implications.  (Think
@@ -274,14 +291,19 @@ Proof.
 Theorem or_distributes_over_and_2 : forall P Q R : Prop,
   (P \/ Q) /\ (P \/ R) -> P \/ (Q /\ R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q R H. inversion H as [ [HP | HQ] [HP' | HR] ].
+  left. apply HP. left. apply HP. left. apply HP'.
+  right. split. apply HQ. apply HR.
+Qed.
+
 (** [] *)
 
 (** **** Exercise: 1 star, optional (or_distributes_over_and) *)
 Theorem or_distributes_over_and : forall P Q R : Prop,
   P \/ (Q /\ R) <-> (P \/ Q) /\ (P \/ R).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q R. split. apply or_distributes_over_and_1. apply or_distributes_over_and_2.
+Qed.
 (** [] *)
 
 (* ################################################### *)
@@ -319,17 +341,25 @@ Proof.
 Theorem andb_false : forall b c,
   andb b c = false -> b = false \/ c = false.
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros b c H. destruct b. destruct c. inversion H.
+  right. reflexivity. left. reflexivity.
+Qed.  
 
 Theorem orb_prop : forall b c,
   orb b c = true -> b = true \/ c = true.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros b c H. destruct b.
+  left. reflexivity. destruct c. right. reflexivity.
+  inversion H.
+Qed.
 
 Theorem orb_false_elim : forall b c,
   orb b c = false -> b = false /\ c = false.
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros b c H. destruct b.
+  inversion H. split. reflexivity. destruct c. inversion H. reflexivity.
+Qed.
+
 (** [] *)
 
 
@@ -398,7 +428,9 @@ Proof.
     intution is that [True] should be a proposition for which it is
     trivial to give evidence.) *)
 
-(* FILL IN HERE *)
+Inductive Truth : Prop :=
+  tt : Truth.
+
 (** [] *)
 
 (** However, unlike [False], which we'll use extensively, [True] is
@@ -463,14 +495,17 @@ Proof.
 Theorem contrapositive : forall P Q : Prop,
   (P -> Q) -> (~Q -> ~P).
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros P Q. unfold not. intros H J P'.
+  apply H in P'. apply J in P'. apply P'.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star (not_both_true_and_false) *)
 Theorem not_both_true_and_false : forall P : Prop,
   ~ (P /\ ~P).
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros P. unfold not. intros H. inversion H. apply H1 in H0. apply H0.
+Qed.
 (** [] *)
 
 (** **** Exercise: 1 star, advanced (informal_not_PNP) *)
@@ -495,7 +530,9 @@ Theorem ev_not_ev_S : forall n,
   ev n -> ~ ev (S n).
 Proof. 
   unfold not. intros n H. induction H. (* not n! *)
-  (* FILL IN HERE *) Admitted.
+  intros H. inversion H. intros J. inversion J. apply IHev in H1.
+  apply H1.
+Qed.
 (** [] *)
 
 (** Note that some theorems that are true in classical logic are _not_
@@ -568,14 +605,24 @@ Theorem false_beq_nat : forall n m : nat,
      n <> m ->
      beq_nat n m = false.
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  induction n.
+  destruct m. intros H.
+  apply ex_falso_quodlibet. apply H. reflexivity.
+  reflexivity.
+  destruct m.
+  reflexivity.
+  intros H. apply IHn. unfold not. unfold not in H. intros J.
+  rewrite J in H. apply H. reflexivity.
+Qed.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (beq_nat_false) *)
 Theorem beq_nat_false : forall n m,
   beq_nat n m = false -> n <> m.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  induction n. destruct m.
+  intros H. apply ex_falso_quodlibet.
+Admitted.
 (** [] *)
 
 (** **** Exercise: 2 stars, optional (ble_nat_false) *)
@@ -677,7 +724,9 @@ Proof.
 Theorem dist_not_exists : forall (X:Type) (P : X -> Prop),
   (forall x, P x) -> ~ (exists x, ~ P x).
 Proof. 
-  (* FILL IN HERE *) Admitted.
+  intros X P H. unfold not. intros J. inversion J. apply H0. apply (H witness).
+Qed.
+  
 (** [] *)
 
 (** **** Exercise: 3 stars, optional (not_exists_dist) *)
@@ -742,7 +791,8 @@ Notation "x = y" := (eq x y)
 Lemma leibniz_equality : forall (X : Type) (x y: X), 
  x = y -> forall P : X -> Prop, P x -> P y.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros X x y H P. inversion H. intros J. apply J.
+Qed.
 (** [] *)
 
 (** We can use
@@ -861,7 +911,11 @@ Proof.
 Theorem override_shadow' : forall (X:Type) x1 x2 k1 k2 (f : nat->X),
   (override' (override' f k1 x2) k1 x1) k2 = (override' f k1 x1) k2.
 Proof.
-  (* FILL IN HERE *) Admitted.
+  intros X x1 x2 k1 k2 f. unfold override'.
+  destruct (eq_nat_dec k1 k2).
+  reflexivity.
+  reflexivity.
+Qed.
 (** [] *)
 
 (* ####################################################### *)
@@ -921,7 +975,10 @@ Proof.
 Lemma dist_and_or_eq_implies_and : forall P Q R,
        P /\ (Q \/ R) /\ Q = R -> P/\Q.
 Proof.
-(* FILL IN HERE *) Admitted.
+  intros P Q R H. split. inversion H. apply H0.
+  inversion H. inversion H1. rewrite H3 in H2. rewrite H3.
+  inversion H2. apply H4. apply H4.
+Qed.
 (** [] *)
 
 
